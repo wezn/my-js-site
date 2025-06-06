@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Comparator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .textarea-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        button {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <h2>Compare Two Lists</h2>
+    <div class="container">
+        <div class="textarea-container">
+            <label>List 1 (Enter words separated by new lines):</label>
+            <textarea id="list1"></textarea>
+        </div>
+        <div class="textarea-container">
+            <label>List 2 (Enter words separated by new lines):</label>
+            <textarea id="list2"></textarea>
+        </div>
+    </div>
+    
+    <button onclick="compareLists()">Find Differences</button>
+    
+    <h3>All Different Words:</h3>
+    <ul id="allDifferences"></ul>
+    
+    <h3>Extra words in List 1:</h3>
+    <ul id="extraInList1"></ul>
+    
+    <h3>Extra words in List 2:</h3>
+    <ul id="extraInList2"></ul>
+    
+    <script>
+        function compareLists() {
+            let list1 = document.getElementById("list1").value.split("\n").map(word => word.trim()).filter(Boolean);
+            let list2 = document.getElementById("list2").value.split("\n").map(word => word.trim()).filter(Boolean);
+            
+            let extraInList1 = list1.filter(word => !list2.includes(word));
+            let extraInList2 = list2.filter(word => !list1.includes(word));
+            let allDifferences = [...new Set([...extraInList1, ...extraInList2])];
+            
+            function updateList(elementId, words) {
+                let resultArea = document.getElementById(elementId);
+                resultArea.innerHTML = "";
+                words.forEach(word => {
+                    let li = document.createElement("li");
+                    li.textContent = word;
+                    resultArea.appendChild(li);
+                });
+            }
+            
+            updateList("allDifferences", allDifferences);
+            updateList("extraInList1", extraInList1);
+            updateList("extraInList2", extraInList2);
+        }
+    </script>
+</body>
+</html>

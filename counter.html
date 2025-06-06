@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Counter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Character Counter</h1>
+  <input type="text" id="wordInput" placeholder="Enter a word or sentence">
+  <button onclick="countCharacters()">Count Characters</button>
+  <div class="output" id="output"></div>
+
+  <script>
+    function countCharacters() {
+      const input = document.getElementById('wordInput').value;
+      const charCount = input.length;
+
+      const output = document.getElementById('output');
+      output.textContent = `The input contains ${charCount} character${charCount !== 1 ? 's' : ''}.`;
+    }
+  </script>
+</body>
+</html>

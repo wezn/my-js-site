@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic FPS Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+    }
+    #crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="crosshair"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+  <script>
+    // Scene, Camera, and Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Pointer Lock Controls for FPS Movement
+    const controls = new THREE.PointerLockControls(camera, document.body);
+
+    // Add event listeners for pointer lock
+    document.body.addEventListener('click', () => {
+      controls.lock();
+    });
+
+    // Skybox
+    const skyGeometry = new THREE.SphereGeometry(500, 64, 64);
+    const skyMaterial = new THREE.MeshBasicMaterial({ color: 0x87ceeb, side: THREE.BackSide });
+    const skybox = new THREE.Mesh(skyGeometry, skyMaterial);
+    scene.add(skybox);
+
+    // Ground with Texture
+    const groundTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/terrain/grasslight-big.jpg');
+    groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set(50, 50);
+
+    const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
+    const groundMaterial = new THREE.MeshStandardMaterial({ map: groundTexture });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    scene.add(ground);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
+
+    // Player movement variables
+    const playerSpeed = 5.0;
+    const movement = { forward: 0, right: 0 };
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 's') movement.forward = -1;
+      if (event.key === 'w') movement.forward = 1;
+      if (event.key === 'a') movement.right = -1;
+      if (event.key === 'd') movement.right = 1;
+    });
+
+    window.addEventListener('keyup', (event) => {
+      if (event.key === 'w' || event.key === 's') movement.forward = 0;
+      if (event.key === 'a' || event.key === 'd') movement.right = 0;
+    });
+
+    // Shooting
+    const raycaster = new THREE.Raycaster();
+    const shootTargets = [];
+
+    // Sound Effects
+    const shootSound = new Audio('https://freesound.org/data/previews/66/66061_634166-lq.mp3');
+    const hitSound = new Audio('https://freesound.org/data/previews/337/337049_3230735-lq.mp3');
+
+    function playSound(sound) {
+      sound.currentTime = 0;
+      sound.play();
+    }
+
+    // Create target
+    function createTarget(position) {
+      const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const targetMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+      const target = new THREE.Mesh(targetGeometry, targetMaterial);
+      target.position.copy(position);
+      target.health = 3; // Simple health system
+      target.velocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.05,
+        0,
+        (Math.random() - 0.5) * 0.05
+      ); // Random movement
+      shootTargets.push(target);
+      scene.add(target);
+    }
+
+    // Add initial targets
+    for (let i = 0; i < 5; i++) {
+      createTarget(new THREE.Vector3(Math.random() * 20 - 10, 1, Math.random() * -20));
+    }
+
+    // Handle shooting
+    document.addEventListener('click', () => {
+      if (!controls.isLocked) return;
+
+      playSound(shootSound);
+
+      raycaster.set(camera.position, camera.getWorldDirection(new THREE.Vector3()));
+      const intersects = raycaster.intersectObjects(shootTargets);
+
+      if (intersects.length > 0) {
+        const target = intersects[0].object;
+        target.health -= 1;
+        if (target.health <= 0) {
+          scene.remove(target);
+          playSound(hitSound);
+
+          // Remove from the list and spawn a new target
+          const index = shootTargets.indexOf(target);
+          if (index > -1) shootTargets.splice(index, 1);
+          createTarget(new THREE.Vector3(Math.random() * 20 - 10, 1, Math.random() * -20));
+        }
+      }
+    });
+
+    // Animate targets
+    function moveTargets() {
+      shootTargets.forEach(target => {
+        target.position.add(target.velocity);
+
+        // Bounce targets if they hit boundaries
+        if (target.position.x > 20 || target.position.x < -20) target.velocity.x *= -1;
+        if (target.position.z > 20 || target.position.z < -20) target.velocity.z *= -1;
+      });
+    }
+
+    // Game loop
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+
+      // Handle movement
+      const direction = new THREE.Vector3(movement.right, 0, movement.forward).normalize();
+      controls.moveRight(direction.x * playerSpeed * delta);
+      controls.moveForward(direction.z * playerSpeed * delta);
+
+      moveTargets();
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

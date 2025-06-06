@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Scramble Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      background-color: #f0f8ff;
+      color: #333;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .scrambled-word {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Word Scramble Puzzle</h1>
+  <div class="scrambled-word" id="scrambledWord">Loading...</div>
+  <input type="text" id="userGuess" placeholder="Your guess">
+  <br>
+  <button onclick="checkGuess()">Submit Guess</button>
+  <div class="result" id="result"></div>
+  <script>
+    const words = ["puzzle", "javascript", "coding", "game", "challenge", "random", "scramble", "abandon", "ability", "able", "abortion", "about", "above"];
+    let currentWord = "";
+    let scrambled = "";
+
+    function shuffleWord(word) {
+      const letters = word.split('');
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      return letters.join('');
+    }
+
+    function startGame() {
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      scrambled = shuffleWord(currentWord);
+      document.getElementById("scrambledWord").textContent = scrambled;
+      document.getElementById("result").textContent = "";
+      document.getElementById("userGuess").value = "";
+    }
+
+    function checkGuess() {
+      const guess = document.getElementById("userGuess").value.trim();
+      const resultElement = document.getElementById("result");
+      if (guess.toLowerCase() === currentWord) {
+        resultElement.textContent = "🎉 Correct! Well done!";
+        resultElement.style.color = "green";
+        setTimeout(startGame, 2000); // Start a new game after 2 seconds
+      } else {
+        resultElement.textContent = "❌ Wrong! Try again.";
+        resultElement.style.color = "red";
+      }
+    }
+
+    // Start the game when the page loads
+    window.onload = startGame;
+  </script>
+</body>
+</html>
