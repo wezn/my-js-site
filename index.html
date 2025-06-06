@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daniel Page</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="https://h.top4top.io/p_3411qnx9b1.png" type="image/png">
+
+  <style>
+    /* Reset and basic styles */
+    body {
+      margin: 0;
+      background-color: #000; /* Black background */
+      color: #00ff00; /* Hacker green text */
+      font-family: 'Courier New', monospace; /* Terminal font */
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Interactive Background */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* Time and Date Wrapper */
+    #date-time-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 800px; /* Align with card width */
+      padding: 0 20px;
+      margin-bottom: 5px;
+      font-size: 0.85rem; /* Smaller font size */
+      font-weight: bold;
+      z-index: 3;
+    }
+
+    /* Main Content Overlay */
+    .content-overlay {
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 2rem;
+      border: 2px solid #00ff00;
+      text-align: center;
+      max-width: 800px;
+      width: 90%;
+      box-shadow: 0px 0px 20px 2px #00ff00;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease-out, transform 0.3s ease;
+      z-index: 2;
+    }
+
+    .content-overlay.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .content-overlay:hover {
+      box-shadow: 0 0 30px #1aff1a, 0 0 50px #00ff00;
+      border-color: #1aff1a;
+      transform: scale(1.05);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0.5rem 0;
+      animation: neon-flicker 2.5s infinite alternate;
+    }
+
+    @keyframes neon-flicker {
+      0%, 100% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #1aff1a, 0 0 40px #00ff00; }
+      50% { text-shadow: 0 0 5px #00ff00, 0 0 10px #1aff1a, 0 0 20px #00ff00; }
+      75% { text-shadow: 0 0 15px #1aff1a, 0 0 25px #00ff00; }
+    }
+
+    #typing-effect {
+      display: inline-block;
+      overflow: hidden;
+      border-right: 0.15em solid #00ff00;
+      white-space: nowrap;
+      animation: none; /* Disabled until triggered */
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #00ff00; }
+    }
+
+    .links {
+      margin-top: 2rem;
+    }
+
+    .links a {
+      display: inline-block;
+      margin: 0.5rem;
+      padding: 0.6rem 1rem;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      color: #00ff00;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      animation: glow 2s infinite;
+    }
+
+    .links a:hover {
+      background-color: #00ff00;
+      color: #000;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 10px #00ff00; }
+      50% { box-shadow: 0 0 20px #00ff00; }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #008000;
+      margin-bottom: 10px;
+    }
+
+    /* Binary Cursor Trail */
+    .cursor-trail {
+      position: fixed;
+      color: #00ff00;
+      font-size: 0.8rem;
+      pointer-events: none;
+      animation: fadeOut 1s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    #audio-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      color: #00ff00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      text-align: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas></canvas>
+
+  <!-- Time and Date above the card box -->
+  <div id="date-time-wrapper">
+    <div id="time"></div>
+    <div id="date"></div>
+  </div>
+
+  <div id="audio-overlay">[ Click Anywhere to Access Page ]</div>
+
+  <div class="content-overlay">
+    <h1>Daniel Page</h1>
+    <p id="typing-effect">Welcome to my page. I'm a mods/game/tools developer. Here's some of my works</p>
+    <div class="links">
+      <a href="https://www.instagram.com/uaooo" target="_blank">Instagram</a>
+      <a href="https://vav.pages.dev/" target="_blank">Comparator</a>
+      <a href="https://dim.pages.dev/" target="_blank">List</a>
+      <a href="https://yeh.pages.dev/" target="_blank">Demo</a>
+      <a href="https://don.pages.dev/" target="_blank">Counter</a>
+      <a href="https://orc.pages.dev/" target="_blank">Puzzle</a>
+      <a href="mailto:danielx@internet.ru">Email Me</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2024 Daniel</p>
+  </footer>
+
+  <audio id="background-music" autoplay loop>
+    <source src="https://a.top4top.io/m_34117mukv1.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const canvas = document.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    function createParticle(x, y, type) {
+      particles.push({ x, y, type, life: 50 + Math.random() * 50 });
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        ctx.fillStyle = "#00ff00";
+        ctx.font = `${Math.random() * 15 + 10}px 'Courier New'`;
+        ctx.fillText(p.type, p.x, p.y);
+        p.y += 3;
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      createParticle(e.clientX, e.clientY, Math.random() > 0.5 ? "0" : "1");
+    });
+
+    const typingEffect = document.getElementById("typing-effect");
+    const overlay = document.getElementById("audio-overlay");
+    const backgroundMusic = document.getElementById("background-music");
+    const contentOverlay = document.querySelector(".content-overlay");
+
+    overlay.addEventListener("click", () => {
+      backgroundMusic.play().catch(() => {
+        console.log("Audio autoplay requires user interaction");
+      });
+      overlay.style.transition = "opacity 0.5s ease";
+      overlay.style.opacity = 0;
+      setTimeout(() => overlay.remove(), 500);
+
+      contentOverlay.classList.add("active");
+      typingEffect.style.animation = "typing 4s steps(40, end), blink-caret 0.5s step-end infinite";
+    });
+
+    function loop() {
+      drawParticles();
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    function updateDateTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString();
+      const date = now.toLocaleDateString();
+      document.getElementById('time').textContent = time;
+      document.getElementById('date').textContent = date;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+</body>
+</html>
