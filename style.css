@@ -63,3 +63,10 @@ pre {
 #result {
   margin-top: 2rem;
 }
+
+.disclaimer {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
